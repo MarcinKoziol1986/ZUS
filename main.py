@@ -47,5 +47,104 @@ Zadbaj o błędy, które mogą się pojawić w trakcie wykonywania operacji
  aplikacja powinna wyświetlić informację o niemożności wykonania operacji i
  jej nie wykonać). Zadbaj też o prawidłowe typy danych.
 """
+Dostepne_Komendy = ['saldo', 'sprzedaz', 'zakup', 'konto', 'lista', 'magazyn', 'przeglad',
+           'koniec']
+Konto = 5000
+magazyn = {
+    'rower': [5, 1000], 'kola do roweru': [40, 250], 'siodelka': [100, 50],
+    'ramy do rowerow': [10, 500], 'smar': [500, 10],
+}
+
+while True:
+    print(f'Komendy: {Dostepne_Komendy}')
+    Komenda = input('Wprowadz Komende:').strip()
+    print(f'Wprowadzona Komenda: {Komenda}')
+    if Komenda not in Dostepne_Komendy:
+        print('Podano Zla Komende')
+
+    if Komenda == 'koniec':
+        print('Koniec Programu, Milego Dnia')
+        break
+    elif Komenda == 'saldo':
+        print(f'wykonuje akcje {Komenda.upper()}...')
+        kwota = float(input('Podaj Kwote, o ktora zmieni sie stan konta:'))
+        if Konto + kwota < 0:
+            print('Ta Operacja jest niemozliwa')
+        else:
+            Konto += kwota
+            print(f'Zmieniam stan konta o {kwota}')
+    elif Komenda == 'sprzedaz':
+        print(f'wykonuje akcje {Komenda.upper()}...')
+        nazwa_produktu = input('Podaj Nazwe Produktu: ')
+        cena = float(input('Podaj Cene Jednego Produktu: '))
+        ilosc_produktow = int(input('Podaj Ilosc Produktow: '))
+        koszt = cena * ilosc_produktow
+        magazyn[nazwa_produktu][0] -= ilosc_produktow
+        if nazwa_produktu not in magazyn:
+            print("nie ma takiego produktu")
+        else:
+            Konto += koszt
+            print(f'Sprzedaje {ilosc_produktow} sztuk {nazwa_produktu} za {koszt}')
+    elif Komenda == 'zakup':
+        print(f'wykonuje akcje {Komenda.upper()}...')
+        nazwa_produktu = input('Podaj Nazwe Produktu: ')
+        cena = float(input('Podaj Cene Jednego Produktu: '))
+        ilosc_produktow = int(input('Podaj Ilosc Produktow: '))
+        koszt = cena * ilosc_produktow
+        magazyn[nazwa_produktu][0] += ilosc_produktow
+        if koszt > Konto:
+            print('Nie masz tylu srodkow na koncie')
+        else:
+            if nazwa_produktu not in magazyn:
+                magazyn[nazwa_produktu] = 0
+                magazyn[nazwa_produktu] += ilosc_produktow
+                Konto -= koszt
+            print(f'zakupiono {ilosc_produktow} sztuk {nazwa_produktu} za {koszt}')
+    elif Komenda == 'konto':
+        print(f'wykonuje akcje {Komenda.upper()}...')
+        print(f'Aktualny Stan Konta to: {Konto}')
+    elif Komenda == 'lista':
+        print(f'wykonuje akcje {Komenda.upper()}...')
+        print(f'Aktualny Stan Magazynu to: {magazyn}')
+    elif Komenda == 'magazyn':
+        print(f'wykonuje akcje {Komenda.upper()}...')
+        produkt_w_magazynie = input('podaj nazwe produktu:')
+        if produkt_w_magazynie not in magazyn:
+            print('Brak towaru w magazynie')
+        elif produkt_w_magazynie == 'rower':
+            print('Wmagazynie znjaduje sie ROWER(ilosc/cena za sztuke)')
+            print(magazyn['rower'])
+        elif produkt_w_magazynie == 'kola do roweru':
+            print('Wmagazynie znjaduje sie KOLA Do ROWERU(ilosc/ cena za sztuke)')
+            print(magazyn['kola do roweru'])
+        elif produkt_w_magazynie == 'siodelka':
+            print('Wmagazynie znjaduje sie SIODELKA(ilosc/cena za sztuke)')
+            print(magazyn['siodelka'])
+        elif produkt_w_magazynie == 'ramy do rowerow':
+            print('Wmagazynie znjaduje sie RAMY DO ROWEROW(ilosc/cena za sztuke)')
+            print(magazyn['ramy do rowerow'])
+        elif produkt_w_magazynie == 'smar':
+            print('Wmagazynie znjaduje sie SMAR(ilosc/cena za sztuke)')
+            print(magazyn['smar'])
+
+
+    elif Komenda == 'przeglad':
+        polecenie_przegladu = ['calosc','magazyn','konto']
+        przeglad = [magazyn, Konto]
+        print(f'wykonuje akcje {Komenda.upper()}...')
+        print(f'Dostepne polecenia: {polecenie_przegladu}')
+        polecenie = input('Podaj polecenie: ').strip()
+        if polecenie not in polecenie_przegladu:
+            print('Nie ma takiego polecenia!')
+            print(f'Dostepne polecenia: {polecenie_przegladu}')
+        elif polecenie == 'calosc':
+            print(przeglad)
+        elif polecenie == 'magazyn':
+            print(f'W Magazynie znajduje sie(przedmior/ilosc/cena za sztuke){magazyn}')
+        elif polecenie == 'konto':
+            print(f'stan konta to: {Konto}')
+
+
+
 
 
