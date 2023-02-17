@@ -47,34 +47,35 @@ Zadbaj o błędy, które mogą się pojawić w trakcie wykonywania operacji
  aplikacja powinna wyświetlić informację o niemożności wykonania operacji i
  jej nie wykonać). Zadbaj też o prawidłowe typy danych.
 """
-Dostepne_Komendy = ['saldo', 'sprzedaz', 'zakup', 'konto', 'lista', 'magazyn', 'przeglad',
+dostepne_komendy = ['saldo', 'sprzedaz', 'zakup', 'konto', 'lista', 'magazyn', 'przeglad',
            'koniec']
-Konto = 5000
+konto = 5000
 magazyn = {
     'rower': [5, 1000], 'kola do roweru': [40, 250], 'siodelka': [100, 50],
     'ramy do rowerow': [10, 500], 'smar': [500, 10],
 }
-
+historia =[]
 while True:
-    print(f'Komendy: {Dostepne_Komendy}')
-    Komenda = input('Wprowadz Komende:').strip()
-    print(f'Wprowadzona Komenda: {Komenda}')
-    if Komenda not in Dostepne_Komendy:
+    print(f'Komendy: {dostepne_komendy}')
+    komenda = input('Wprowadz Komende:').strip()
+    print(f'Wprowadzona Komenda: {komenda}')
+    if komenda not in dostepne_komendy:
         print('Podano Zla Komende')
 
-    if Komenda == 'koniec':
+    if komenda == 'koniec':
         print('Koniec Programu, Milego Dnia')
         break
-    elif Komenda == 'saldo':
-        print(f'wykonuje akcje {Komenda.upper()}...')
+    elif komenda == 'saldo':
+        print(f'wykonuje akcje {komenda.upper()}...')
         kwota = float(input('Podaj Kwote, o ktora zmieni sie stan konta:'))
-        if Konto + kwota < 0:
+        if konto + kwota < 0:
             print('Ta Operacja jest niemozliwa')
         else:
-            Konto += kwota
+            konto += kwota
             print(f'Zmieniam stan konta o {kwota}')
-    elif Komenda == 'sprzedaz':
-        print(f'wykonuje akcje {Komenda.upper()}...')
+            historia.append([komenda, kwota])
+    elif komenda == 'sprzedaz':
+        print(f'wykonuje akcje {komenda.upper()}...')
         nazwa_produktu = input('Podaj Nazwe Produktu: ')
         cena = float(input('Podaj Cene Jednego Produktu: '))
         ilosc_produktow = int(input('Podaj Ilosc Produktow: '))
@@ -83,31 +84,33 @@ while True:
         if nazwa_produktu not in magazyn:
             print("nie ma takiego produktu")
         else:
-            Konto += koszt
+            konto += koszt
             print(f'Sprzedaje {ilosc_produktow} sztuk {nazwa_produktu} za {koszt}')
-    elif Komenda == 'zakup':
-        print(f'wykonuje akcje {Komenda.upper()}...')
+            historia.append([komenda, kwota])
+    elif komenda == 'zakup':
+        print(f'wykonuje akcje {komenda.upper()}...')
         nazwa_produktu = input('Podaj Nazwe Produktu: ')
         cena = float(input('Podaj Cene Jednego Produktu: '))
         ilosc_produktow = int(input('Podaj Ilosc Produktow: '))
         koszt = cena * ilosc_produktow
         magazyn[nazwa_produktu][0] += ilosc_produktow
-        if koszt > Konto:
+        if koszt > konto:
             print('Nie masz tylu srodkow na koncie')
         else:
             if nazwa_produktu not in magazyn:
                 magazyn[nazwa_produktu] = 0
                 magazyn[nazwa_produktu] += ilosc_produktow
-                Konto -= koszt
+                konto -= koszt
             print(f'zakupiono {ilosc_produktow} sztuk {nazwa_produktu} za {koszt}')
-    elif Komenda == 'konto':
-        print(f'wykonuje akcje {Komenda.upper()}...')
-        print(f'Aktualny Stan Konta to: {Konto}')
-    elif Komenda == 'lista':
-        print(f'wykonuje akcje {Komenda.upper()}...')
+            historia.append([komenda, kwota])
+    elif komenda == 'konto':
+        print(f'wykonuje akcje {komenda.upper()}...')
+        print(f'Aktualny Stan Konta to: {konto}')
+    elif komenda == 'lista':
+        print(f'wykonuje akcje {komenda.upper()}...')
         print(f'Aktualny Stan Magazynu to: {magazyn}')
-    elif Komenda == 'magazyn':
-        print(f'wykonuje akcje {Komenda.upper()}...')
+    elif komenda == 'magazyn':
+        print(f'wykonuje akcje {komenda.upper()}...')
         produkt_w_magazynie = input('podaj nazwe produktu:')
         if produkt_w_magazynie not in magazyn:
             print('Brak towaru w magazynie')
@@ -128,21 +131,25 @@ while True:
             print(magazyn['smar'])
 
 
-    elif Komenda == 'przeglad':
-        polecenie_przegladu = ['calosc','magazyn','konto']
-        przeglad = [magazyn, Konto]
-        print(f'wykonuje akcje {Komenda.upper()}...')
-        print(f'Dostepne polecenia: {polecenie_przegladu}')
-        polecenie = input('Podaj polecenie: ').strip()
-        if polecenie not in polecenie_przegladu:
-            print('Nie ma takiego polecenia!')
-            print(f'Dostepne polecenia: {polecenie_przegladu}')
-        elif polecenie == 'calosc':
-            print(przeglad)
-        elif polecenie == 'magazyn':
-            print(f'W Magazynie znajduje sie(przedmior/ilosc/cena za sztuke){magazyn}')
-        elif polecenie == 'konto':
-            print(f'stan konta to: {Konto}')
+    elif komenda == 'przeglad':
+        print(f'wykonuje akcje {komenda.upper()}...')
+        print('Prosze Wybrac Zakres od 0 do 4')
+        od = int(input("podaj zakres od: "))
+        do = int(input("podaj zakres do: "))
+        if od < 0:
+            print('poza zakresem, prosze wprowadzic poprawny zakres')
+            od = int(input("podaj zakres od: "))
+        if do > 4:
+            print('poza zakresem, prosze wprowadzic poprawny zakres')
+            do = int(input("podaj zakres do: "))
+        for idx, wpis in enumerate(historia[od:do]):
+            print(idx, wpis)
+        print(historia)
+
+
+
+
+
 
 
 
