@@ -56,47 +56,47 @@ Saldo konta oraz magazyn mają zostać zapisane do pliku tekstowego, a przy kole
 uruchomieniu programu ma zostać odczytany. Zapisać należy również historię operacji
 (przegląd), która powinna być rozszerzana przy każdym kolejnym uruchomieniu programu.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 """
 
-dostepne_komendy = ['saldo', 'sprzedaz', 'zakup', 'konto', 'lista', 'magazyn', 'przeglad',
-           'koniec']
+DOSTEPNE_KOMENDY = (
+    'saldo',
+    'sprzedaz',
+    'zakup',
+    'konto',
+    'lista',
+    'magazyn',
+    'przeglad',
+    'koniec',
+)
+
+magazyn = {}
+historia = []
+
 with open('saldo.txt') as plik1:
     konto = int(plik1.readline())
-magazyn = {}
+
 with open('magazyn.txt') as plik2:
     for linia in plik2:
-        nazwa_produktu = linia.strip().split('\t')[0]
-        # ilosc_sztuk = int(linia.strip().split('\t')[1])
-        # cena = int(linia.strip().split('\t')[2])
-        # magazyn[nazwa_produktu] = [ilosc_sztuk, cena]
-print(magazyn)
-historia = []
+        nazwa_produktu = linia.strip().split(";")[0]
+        ilosc_sztuk = int(linia.strip().split(";")[1])
+        cena = int(linia.strip().split(";")[2])
+        magazyn[nazwa_produktu] = [ilosc_sztuk, cena]
+
+
 while True:
-    print(f'Komendy: {dostepne_komendy}')
+    print(f'Komendy: {DOSTEPNE_KOMENDY}')
     komenda = input('Wprowadz Komende:').strip()
     print(f'Wprowadzona Komenda: {komenda}')
-    if komenda not in dostepne_komendy:
+    if komenda not in DOSTEPNE_KOMENDY:
         print('Podano Zla Komende')
 
     if komenda == 'koniec':
         print('Koniec Programu, Milego Dnia')
+        # zapis do pliku
         break
     elif komenda == 'saldo':
         print(f'wykonuje akcje {komenda.upper()}...')
-        kwota = float(input('Podaj Kwote, o ktora zmieni sie stan konta:'))
+        kwota = int(input('Podaj Kwote, o ktora zmieni sie stan konta:'))
         if konto + kwota < 0:
             print('Ta Operacja jest niemozliwa')
         else:
@@ -115,7 +115,7 @@ while True:
         else:
             konto += koszt
             print(f'Sprzedaje {ilosc_produktow} sztuk {nazwa_produktu} za {koszt}')
-            historia.append([komenda, kwota])
+            historia.append([komenda, nazwa_produktu, ilosc_produktow, koszt])
     elif komenda == 'zakup':
         print(f'wykonuje akcje {komenda.upper()}...')
         nazwa_produktu = input('Podaj Nazwe Produktu: ')
@@ -131,7 +131,7 @@ while True:
                 magazyn[nazwa_produktu] += ilosc_produktow
                 konto -= koszt
             print(f'zakupiono {ilosc_produktow} sztuk {nazwa_produktu} za {koszt}')
-            historia.append([komenda, kwota])
+            historia.append([komenda, nazwa_produktu, ilosc_produktow, koszt])
     elif komenda == 'konto':
         print(f'wykonuje akcje {komenda.upper()}...')
         print(f'Aktualny Stan Konta to: {konto}')
@@ -139,25 +139,14 @@ while True:
         print(f'wykonuje akcje {komenda.upper()}...')
         print(f'Aktualny Stan Magazynu to: {magazyn}')
     elif komenda == 'magazyn':
+        print(">>>> ", magazyn)
         print(f'wykonuje akcje {komenda.upper()}...')
         produkt_w_magazynie = input('podaj nazwe produktu:')
         if produkt_w_magazynie not in magazyn:
             print('Brak towaru w magazynie')
-        elif produkt_w_magazynie == 'rower':
-            print('Wmagazynie znjaduje sie ROWER(ilosc/cena za sztuke)')
-            print(magazyn['rower'])
-        elif produkt_w_magazynie == 'kola do roweru':
-            print('Wmagazynie znjaduje sie KOLA Do ROWERU(ilosc/ cena za sztuke)')
-            print(magazyn['kola do roweru'])
-        elif produkt_w_magazynie == 'siodelka':
-            print('Wmagazynie znjaduje sie SIODELKA(ilosc/cena za sztuke)')
-            print(magazyn['siodelka'])
-        elif produkt_w_magazynie == 'ramy do rowerow':
-            print('Wmagazynie znjaduje sie RAMY DO ROWEROW(ilosc/cena za sztuke)')
-            print(magazyn['ramy do rowerow'])
-        elif produkt_w_magazynie == 'smar':
-            print('Wmagazynie znjaduje sie SMAR(ilosc/cena za sztuke)')
-            print(magazyn['smar'])
+            continue
+        print(f'Wmagazynie znjaduje sie {produkt_w_magazynie.upper()}(ilosc/cena za sztuke)')
+        print(magazyn[produkt_w_magazynie])
     elif komenda == 'przeglad':
         with open('historia.txt', 'r') as plik3:
             zawartosc = plik3.readlines()
@@ -172,13 +161,20 @@ while True:
         if do > 4:
             print('poza zakresem, prosze wprowadzic poprawny zakres')
             do = int(input("podaj zakres do: "))
-        for idx, wpis in enumerate(historia[od:do]):
+        for idx, wpis in enumerate(zawartosc[od:do]):
             print(idx, wpis)
-        print(historia)
+        print(zawartosc)
         with open('historia.txt', 'a') as plik3:
             for polecenie in historia:
-                if polecenie[0] in ['zakup', 'sprzedaz']:
-                    polecenie_do_zapisu = f'{polecenie[0]}{polecenie[1]}{polecenie[2]}'
-                elif polecenie[0] == 'saldo':
-                    polecenie_do_zapisu = f'{polecenie[0]}{polecenie[1]}'
+                if polecenie[0] in ['zakup']:
+                    polecenie_do_zapisu = \
+                        f'{polecenie[0]} {polecenie[1]} {polecenie[2]} {polecenie[3]}\n'
+                elif polecenie[0] in ['sprzedaz']:
+                    polecenie_do_zapisu = \
+                        f'{polecenie[0]} {polecenie[1]} {polecenie[2]} {polecenie[3]}\n'
+                elif polecenie[0] in ['saldo']:
+                    polecenie_do_zapisu =\
+                        f'{polecenie[0]} {polecenie[1]}\n'
+                else:
+                    continue
                 plik3.write(polecenie_do_zapisu)
