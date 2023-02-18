@@ -46,15 +46,44 @@ Zadbaj o błędy, które mogą się pojawić w trakcie wykonywania operacji
 (np. przy komendzie "zakup" jeśli dla produktu podamy ujemną kwotę,
  aplikacja powinna wyświetlić informację o niemożności wykonania operacji i
  jej nie wykonać). Zadbaj też o prawidłowe typy danych.
+
+ ----------------------------------------------------------
+ Zadanie 7
+ Na podstawie zadania z lekcji 5 (operacje na koncie, sprzedaż/zakup itp.) należy
+ zaimplementować poniższą część:
+
+Saldo konta oraz magazyn mają zostać zapisane do pliku tekstowego, a przy kolejnym
+uruchomieniu programu ma zostać odczytany. Zapisać należy również historię operacji
+(przegląd), która powinna być rozszerzana przy każdym kolejnym uruchomieniu programu.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 """
+
 dostepne_komendy = ['saldo', 'sprzedaz', 'zakup', 'konto', 'lista', 'magazyn', 'przeglad',
            'koniec']
-konto = 5000
-magazyn = {
-    'rower': [5, 1000], 'kola do roweru': [40, 250], 'siodelka': [100, 50],
-    'ramy do rowerow': [10, 500], 'smar': [500, 10],
-}
-historia =[]
+with open('saldo.txt') as plik1:
+    konto = int(plik1.readline())
+magazyn = {}
+with open('magazyn.txt') as plik2:
+    for linia in plik2:
+        nazwa_produktu = linia.strip().split('\t')[0]
+        # ilosc_sztuk = int(linia.strip().split('\t')[1])
+        # cena = int(linia.strip().split('\t')[2])
+        # magazyn[nazwa_produktu] = [ilosc_sztuk, cena]
+print(magazyn)
+historia = []
 while True:
     print(f'Komendy: {dostepne_komendy}')
     komenda = input('Wprowadz Komende:').strip()
@@ -129,9 +158,10 @@ while True:
         elif produkt_w_magazynie == 'smar':
             print('Wmagazynie znjaduje sie SMAR(ilosc/cena za sztuke)')
             print(magazyn['smar'])
-
-
     elif komenda == 'przeglad':
+        with open('historia.txt', 'r') as plik3:
+            zawartosc = plik3.readlines()
+            zawartosc.extend(historia)
         print(f'wykonuje akcje {komenda.upper()}...')
         print('Prosze Wybrac Zakres od 0 do 4')
         od = int(input("podaj zakres od: "))
@@ -145,13 +175,10 @@ while True:
         for idx, wpis in enumerate(historia[od:do]):
             print(idx, wpis)
         print(historia)
-
-
-
-
-
-
-
-
-
-
+        with open('historia.txt', 'a') as plik3:
+            for polecenie in historia:
+                if polecenie[0] in ['zakup', 'sprzedaz']:
+                    polecenie_do_zapisu = f'{polecenie[0]}{polecenie[1]}{polecenie[2]}'
+                elif polecenie[0] == 'saldo':
+                    polecenie_do_zapisu = f'{polecenie[0]}{polecenie[1]}'
+                plik3.write(polecenie_do_zapisu)
